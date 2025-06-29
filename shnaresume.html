@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Resume Builder</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F5F2; /* Soft, warm off-white background */
+            color: #333333; /* Darker text for professionalism */
+        }
+        /* Style for print output */
+        @media print {
+            body {
+                background-color: #ffffff;
+                /* Adjust font size for print to help fit content */
+                font-size: 0.85em; /* Slightly smaller for compactness */
+            }
+            .print-hide {
+                display: none !important;
+            }
+            .resume-preview {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: none !important;
+            }
+            /* A4 page size and margins for print */
+            @page {
+                size: A4; /* Sets the page size to A4 */
+                margin: 1.5cm; /* Adjust margins to give more space for content */
+            }
+            .page-break {
+                page-break-after: always;
+            }
+            /* Adjust table width for print */
+            #previewAcademicTable {
+                width: 100%;
+                table-layout: fixed; /* Ensures columns are evenly distributed */
+            }
+            #previewAcademicTable th, #previewAcademicTable td {
+                padding: 6px 3px !important; /* Smaller padding for print */
+                font-size: 0.9em; /* Ensure table text is still readable */
+            }
+            /* Further reduce spacing for sections in print */
+            section {
+                margin-bottom: 10px; /* Reduced margin between sections */
+            }
+            p {
+                margin-bottom: 4px; /* Reduced margin between paragraphs */
+            }
+            ul {
+                margin-top: 4px;
+            }
+            li {
+                margin-bottom: 2px; /* Reduced margin for list items */
+            }
+            .section-title-underline {
+                margin-bottom: 8px; /* Adjust margin for titles */
+            }
+            .border-b {
+                margin-top: 8px; /* Adjust spacing for horizontal rules */
+                margin-bottom: 8px;
+            }
+        }
+
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Hide number input arrows */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        .section-title-underline {
+            border-bottom: 1px solid #4A4A4A; /* Darker underline for warm contrast */
+            display: inline-block;
+            padding-bottom: 2px;
+        }
+        /* Adjusted spinner color for new theme (though no longer used, good practice) */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: #ffffff;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 lg:p-8 flex flex-col items-center">
+    <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-6 sm:mb-8 text-center print-hide">Simple Resume Builder</h1>
+
+    <div class="flex flex-col lg:flex-row gap-6 w-full max-w-7xl">
+        <!-- Input Form Section -->
+        <div class="w-full lg:w-1/2 bg-white p-6 sm:p-8 rounded-xl shadow-lg print-hide overflow-y-auto" style="background-color: #FDFBF8;"> <!-- Lighter cream for input forms -->
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">Your Details</h2>
+
+            <!-- Personal Information -->
+            <div class="mb-6 border-b pb-4">
+                <h3 class="text-xl font-medium text-gray-600 mb-4">Personal Information</h3>
+                <input type="text" id="name" placeholder="Full Name" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]"> <!-- Warm focus ring -->
+                <input type="text" id="dob" placeholder="Date of Birth (DD-MM-YYYY)" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+                <input type="text" id="address" placeholder="Address" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+                <input type="tel" id="phone" placeholder="Phone Number" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+                <input type="email" id="email" placeholder="E-mail" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+            </div>
+
+            <!-- Career Objective -->
+            <div class="mb-6 border-b pb-4">
+                <h3 class="text-xl font-medium text-gray-600 mb-4 flex justify-between items-center">
+                    Career Objective
+                </h3>
+                <textarea id="careerObjective" placeholder="State your career objective clearly and concisely." rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932] resize-y"></textarea>
+            </div>
+
+            <!-- Academic Details -->
+            <div class="mb-6 border-b pb-4">
+                <h3 class="text-xl font-medium text-gray-600 mb-4 flex justify-between items-center">
+                    Academic Details
+                    <button id="addAcademic" class="px-4 py-2 bg-[#B35932] text-white rounded-lg hover:bg-[#9B4D2B] transition duration-200 shadow-md">Add</button> <!-- Warm button color -->
+                </h3>
+                <div id="academicContainer">
+                    <!-- Academic fields will be added here by JS -->
+                </div>
+            </div>
+
+            <!-- Personal Details -->
+            <div class="mb-6 border-b pb-4">
+                <h3 class="text-xl font-medium text-gray-600 mb-4">Other Personal Details</h3>
+                <input type="text" id="fatherName" placeholder="Father's Name" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+                <input type="text" id="motherName" placeholder="Mother's Name" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+
+                <select id="gender" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <select id="maritalStatus" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+                    <option value="">Select Marital Status</option>
+                    <option value="Single">Single</option>
+                    <option value="Married">Married</option>
+                    <option value="Divorced">Divorced</option>
+                    <option value="Widowed">Widowed</option>
+                </select>
+
+                <input type="text" id="nationality" placeholder="Nationality" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+
+                <select id="category" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+                    <option value="">Select Category</option>
+                    <option value="General">General</option>
+                    <option value="OBC">OBC</option>
+                    <option value="SC">SC</option>
+                    <option value="ST">ST</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input type="text" id="languageKnown" placeholder="Language(s) Known (comma-separated)" class="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B35932]">
+            </div>
+
+            <!-- Work Experience -->
+            <div class="mb-6 border-b pb-4">
+                <h3 class="text-xl font-medium text-gray-600 mb-4 flex justify-between items-center">
+                    Work Experience
+                    <button id="addExperience" class="px-4 py-2 bg-[#B35932] text-white rounded-lg hover:bg-[#9B4D2B] transition duration-200 shadow-md">Add</button> <!-- Warm button color -->
+                </h3>
+                <div id="experienceContainer">
+                    <!-- Experience fields will be added here by JS -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                <button id="printResume" class="flex-1 px-6 py-3 bg-[#6C5B7B] text-white rounded-lg hover:bg-[#5C4A6A] transition duration-200 shadow-xl font-bold text-lg"> <!-- Muted warm tone for print -->
+                    Print / Save as PDF
+                </button>
+                <button id="clearAll" class="flex-1 px-6 py-3 bg-[#D64545] text-white rounded-lg hover:bg-[#B33939] transition duration-200 shadow-xl font-bold text-lg"> <!-- Slightly adjusted red -->
+                    Clear All
+                </button>
+            </div>
+        </div>
+
+        <!-- Resume Preview Section -->
+        <div class="w-full lg:w-1/2 bg-white p-6 sm:p-8 rounded-xl shadow-lg overflow-y-auto" style="background-color: #FFFFFF;"> <!-- Keep preview white for better print contrast -->
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6 print-hide">Resume Preview</h2>
+            <div id="resumePreview" class="resume-preview p-6 border border-gray-200 rounded-lg bg-white min-h-[500px]" style="border-color: #E0C7B6;"> <!-- Warm border for preview -->
+                <div class="text-center mb-6">
+                    <h1 class="text-4xl font-bold uppercase tracking-wider section-title-underline mx-auto" style="color: #4A4A4A;">RESUME</h1> <!-- Darker resume title -->
+                </div>
+
+                <!-- Personal Info -->
+                <section class="mb-6">
+                    <p class="text-gray-800 text-lg mb-2">Full Name: <span id="previewName"></span></p>
+                    <p class="text-gray-800 text-lg mb-2">Date Of Birth: <span id="previewDOB"></span></p>
+                    <p class="text-gray-800 text-lg mb-2">Address: <span id="previewAddress"></span></p>
+                    <div class="border-b border-gray-700 my-4" style="border-color: #6D5C5A;"></div> <!-- Warm divider -->
+                    <p class="text-gray-800 text-lg mb-2">Phone Number: <span id="previewPhone"></span></p>
+                    <p class="text-gray-800 text-lg mb-2">E-mail: <span id="previewEmail"></span></p>
+                    <div class="border-b border-gray-700 my-4" style="border-color: #6D5C5A;"></div> <!-- Warm divider -->
+                </section>
+
+                <!-- Career Objective -->
+                <section class="mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3 section-title-underline">Career Objective:</h3>
+                    <p id="previewCareerObjective" class="text-gray-700 leading-relaxed text-base">
+                        Your career objective will appear here.
+                    </p>
+                </section>
+
+                <!-- Academic Details -->
+                <section class="mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3 section-title-underline">Academic Details:</h3>
+                    <table id="previewAcademicTable" class="w-full border-collapse border border-gray-400" style="border-color: #B39F90;"> <!-- Warm table borders -->
+                        <thead>
+                            <tr class="bg-gray-100" style="background-color: #F5EFEB;"> <!-- Light warm table header background -->
+                                <th class="border border-gray-400 p-2 text-left font-semibold text-gray-700" style="border-color: #B39F90;">Qualification</th>
+                                <th class="border border-gray-400 p-2 text-left font-semibold text-gray-700" style="border-color: #B39F90;">Board</th>
+                                <th class="border border-gray-400 p-2 text-left font-semibold text-gray-700" style="border-color: #B39F90;">Institute</th>
+                                <th class="border border-gray-400 p-2 text-left font-semibold text-gray-700" style="border-color: #B39F90;">Year of Passing</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewAcademicBody">
+                            <!-- Academic rows will be rendered here -->
+                             <tr>
+                                 <td class="border border-gray-400 p-2 text-gray-700" style="border-color: #B39F90;">Your Degree</td>
+                                 <td class="border border-gray-400 p-2 text-gray-700" style="border-color: #B39F90;">Your Board</td>
+                                 <td class="border border-gray-400 p-2 text-gray-700" style="border-color: #B39F90;">Your Institute</td>
+                                 <td class="border border-gray-400 p-2 text-gray-700" style="border-color: #B39F90;">Year</td>
+                             </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Other Personal Details -->
+                <section class="mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3 section-title-underline">Personal Details:</h3>
+                    <p class="text-gray-800 text-lg mb-2">Father's Name: <span id="previewFatherName"></span></p>
+                    <p class="text-gray-800 text-lg mb-2">Mother's Name: <span id="previewMotherName"></span></p>
+                    <p class="text-gray-800 text-lg mb-2">Gender: <span id="previewGender"></span></p>
+                    <p class="text-gray-800 text-lg mb-2">Marital Status: <span id="previewMaritalStatus"></span></p>
+                    <p class="text-gray-800 text-lg mb-2">Nationality: <span id="previewNationality"></span></p>
+                    <p class="text-gray-800 text-lg mb-2">Category: <span id="previewCategory"></span></p>
+                    <p class="text-gray-800 text-lg mb-2">Language Known: <span id="previewLanguageKnown"></span></p>
+                </section>
+
+                <!-- Work Experience -->
+                <section class="mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3 section-title-underline">Work Experience:</h3>
+                    <div id="previewExperienceContainer">
+                        <!-- Experience items will be rendered here -->
+                        <div class="mb-4">
+                            <ul class="list-disc list-inside text-gray-700 text-base leading-relaxed">
+                                <li>Describe your work experience, focusing on responsibilities and achievements.</li>
+                                <li>You can add multiple bullet points for each role.</li>
+                                <li>Include company name, job title, and dates within the description if desired.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Declaration -->
+                <section>
+                    <div class="text-center mt-8">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-3 section-title-underline">Declaration</h3>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed text-base">
+                        I hereby declare that the above information is correct and complete to the
+                        best of my knowledge and belief and I bear the responsibility for
+                        correctness of the particulars.
+                    </p>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Element References ---
+        const nameInput = document.getElementById('name');
+        const dobInput = document.getElementById('dob');
+        const addressInput = document.getElementById('address');
+        const phoneInput = document.getElementById('phone');
+        const emailInput = document.getElementById('email');
+        const careerObjectiveInput = document.getElementById('careerObjective');
+        // Removed references to generateObjectiveBtn, generateObjectiveText, objectiveSpinner
+
+        const addAcademicBtn = document.getElementById('addAcademic');
+        const academicContainer = document.getElementById('academicContainer');
+
+        const fatherNameInput = document.getElementById('fatherName');
+        const motherNameInput = document.getElementById('motherName');
+        const genderSelect = document.getElementById('gender'); // Changed to select
+        const maritalStatusSelect = document.getElementById('maritalStatus'); // Changed to select
+        const nationalityInput = document.getElementById('nationality');
+        const categorySelect = document.getElementById('category'); // Changed to select
+        const languageKnownInput = document.getElementById('languageKnown');
+
+        const addExperienceBtn = document.getElementById('addExperience');
+        const experienceContainer = document.getElementById('experienceContainer');
+
+        const printResumeBtn = document.getElementById('printResume');
+        const clearAllBtn = document.getElementById('clearAll');
+
+        // Preview Elements
+        const previewName = document.getElementById('previewName');
+        const previewDOB = document.getElementById('previewDOB');
+        const previewAddress = document.getElementById('previewAddress');
+        const previewPhone = document.getElementById('previewPhone');
+        const previewEmail = document.getElementById('previewEmail');
+        const previewCareerObjective = document.getElementById('previewCareerObjective');
+        const previewAcademicBody = document.getElementById('previewAcademicBody');
+        const previewFatherName = document.getElementById('previewFatherName');
+        const previewMotherName = document.getElementById('previewMotherName');
+        const previewGender = document.getElementById('previewGender');
+        const previewMaritalStatus = document.getElementById('previewMaritalStatus');
+        const previewNationality = document.getElementById('previewNationality');
+        const previewCategory = document.getElementById('previewCategory');
+        const previewLanguageKnown = document.getElementById('previewLanguageKnown');
+        const previewExperienceContainer = document.getElementById('previewExperienceContainer');
+
+
+        // --- Data Structure for Resume ---
+        let resumeData = {
+            personal: {
+                name: '',
+                dob: '',
+                address: '',
+                phone: '',
+                email: ''
+            },
+            careerObjective: '',
+            academic: [],
+            otherPersonal: {
+                fatherName: '',
+                motherName: '',
+                gender: '',
+                maritalStatus: '',
+                nationality: '',
+                category: '',
+                languageKnown: ''
+            },
+            experience: []
+        };
+
+        // --- Helper Function: Update Preview ---
+        function updatePreview() {
+            // Personal Information
+            previewName.textContent = resumeData.personal.name || '';
+            previewDOB.textContent = resumeData.personal.dob || '';
+            previewAddress.textContent = resumeData.personal.address || '';
+            previewPhone.textContent = resumeData.personal.phone || '';
+            previewEmail.textContent = resumeData.personal.email || '';
+
+            // Career Objective
+            previewCareerObjective.textContent = resumeData.careerObjective || 'Your career objective will appear here.';
+
+            // Academic Details
+            previewAcademicBody.innerHTML = '';
+            if (resumeData.academic.length === 0) {
+                previewAcademicBody.innerHTML = `
+                    <tr>
+                        <td class="border border-gray-400 p-2 text-gray-700">Your Degree</td>
+                        <td class="border border-gray-400 p-2 text-gray-700">Your Board</td>
+                        <td class="border border-gray-400 p-2 text-gray-700">Your Institute</td>
+                        <td class="border border-gray-400 p-2 text-gray-700">Year</td>
+                     </tr>
+                `;
+            } else {
+                resumeData.academic.forEach(acad => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="border border-gray-400 p-2 text-gray-700" style="border-color: #B39F90;">${acad.qualification || ''}</td>
+                        <td class="border border-gray-400 p-2 text-gray-700" style="border-color: #B39F90;">${acad.board || ''}</td>
+                        <td class="border border-gray-400 p-2 text-gray-700" style="border-color: #B39F90;">${acad.institute || ''}</td>
+                        <td class="border border-gray-400 p-2 text-gray-700" style="border-color: #B39F90;">${acad.year || ''}</td>
+                    `;
+                    previewAcademicBody.appendChild(tr);
+                });
+            }
+
+            // Other Personal Details
+            previewFatherName.textContent = resumeData.otherPersonal.fatherName || '';
+            previewMotherName.textContent = resumeData.otherPersonal.motherName || '';
+            previewGender.textContent = resumeData.otherPersonal.gender || '';
+            previewMaritalStatus.textContent = resumeData.otherPersonal.maritalStatus || '';
+            previewNationality.textContent = resumeData.otherPersonal.nationality || '';
+            previewCategory.textContent = resumeData.otherPersonal.category || '';
+            previewLanguageKnown.textContent = resumeData.otherPersonal.languageKnown || '';
+
+
+            // Work Experience
+            previewExperienceContainer.innerHTML = '';
+            if (resumeData.experience.length === 0) {
+                previewExperienceContainer.innerHTML = `
+                    <div class="mb-4">
+                        <ul class="list-disc list-inside text-gray-700 text-base leading-relaxed">
+                            <li>Describe your work experience, focusing on responsibilities and achievements.</li>
+                            <li>You can add multiple bullet points for each role.</li>
+                            <li>Include company name, job title, and dates within the description if desired.</li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                resumeData.experience.forEach(exp => {
+                    const expDiv = document.createElement('div');
+                    expDiv.className = 'mb-4';
+                    expDiv.innerHTML = `
+                        <ul class="list-disc list-inside text-gray-700 text-base leading-relaxed">
+                            ${exp.description.split('\n').filter(line => line.trim() !== '').map(line => `<li>${line.trim()}</li>`).join('') || '<li>Work experience description</li>'}
+                        </ul>
+                    `;
+                    previewExperienceContainer.appendChild(expDiv);
+                });
+            }
+
+            saveResumeData(); // Save data to local storage after every update
+        }
+
+        // --- Helper Function: Save Data to Local Storage ---
+        function saveResumeData() {
+            try {
+                localStorage.setItem('resumeBuilderDataTraditional', JSON.stringify(resumeData));
+            } catch (e) {
+                console.error("Error saving to local storage:", e);
+            }
+        }
+
+        // --- Helper Function: Load Data from Local Storage ---
+        function loadResumeData() {
+            try {
+                const savedData = localStorage.getItem('resumeBuilderDataTraditional');
+                if (savedData) {
+                    resumeData = JSON.parse(savedData);
+                    // Populate input fields
+                    nameInput.value = resumeData.personal.name;
+                    dobInput.value = resumeData.personal.dob;
+                    addressInput.value = resumeData.personal.address;
+                    phoneInput.value = resumeData.personal.phone;
+                    emailInput.value = resumeData.personal.email;
+                    careerObjectiveInput.value = resumeData.careerObjective;
+
+                    fatherNameInput.value = resumeData.otherPersonal.fatherName;
+                    motherNameInput.value = resumeData.otherPersonal.motherName;
+                    genderSelect.value = resumeData.otherPersonal.gender; // Set value for select
+                    maritalStatusSelect.value = resumeData.otherPersonal.maritalStatus; // Set value for select
+                    nationalityInput.value = resumeData.otherPersonal.nationality;
+                    categorySelect.value = resumeData.otherPersonal.category; // Set value for select
+                    languageKnownInput.value = resumeData.otherPersonal.languageKnown;
+
+                    // Clear existing dynamic input fields before re-adding
+                    academicContainer.innerHTML = '';
+                    experienceContainer.innerHTML = '';
+
+                    // Re-create dynamic input fields based on loaded data
+                    resumeData.academic.forEach(addAcademicInput);
+                    resumeData.experience.forEach(addExperienceInput);
+
+                    updatePreview(); // Update preview with loaded data
+                } else {
+                    // Initialize with default empty dynamic fields if no saved data
+                    addAcademicInput();
+                    addExperienceInput();
+                    updatePreview();
+                }
+            } catch (e) {
+                console.error("Error loading from local storage:", e);
+                // If parsing fails, reset to default state
+                clearAllData();
+            }
+        }
+
+        // --- Event Listeners for Static Info ---
+        nameInput.addEventListener('input', () => { resumeData.personal.name = nameInput.value; updatePreview(); });
+        dobInput.addEventListener('input', () => { resumeData.personal.dob = dobInput.value; updatePreview(); });
+        addressInput.addEventListener('input', () => { resumeData.personal.address = addressInput.value; updatePreview(); });
+        phoneInput.addEventListener('input', () => { resumeData.personal.phone = phoneInput.value; updatePreview(); });
+        emailInput.addEventListener('input', () => { resumeData.personal.email = emailInput.value; updatePreview(); });
+        careerObjectiveInput.addEventListener('input', () => { resumeData.careerObjective = careerObjectiveInput.value; updatePreview(); });
+
+        fatherNameInput.addEventListener('input', () => { resumeData.otherPersonal.fatherName = fatherNameInput.value; updatePreview(); });
+        motherNameInput.addEventListener('input', () => { resumeData.otherPersonal.motherName = motherNameInput.value; updatePreview(); });
+        genderSelect.addEventListener('change', () => { resumeData.otherPersonal.gender = genderSelect.value; updatePreview(); }); // Changed to 'change' event
+        maritalStatusSelect.addEventListener('change', () => { resumeData.otherPersonal.maritalStatus = maritalStatusSelect.value; updatePreview(); }); // Changed to 'change' event
+        nationalityInput.addEventListener('input', () => { resumeData.otherPersonal.nationality = nationalityInput.value; updatePreview(); });
+        categorySelect.addEventListener('change', () => { resumeData.otherPersonal.category = categorySelect.value; updatePreview(); }); // Changed to 'change' event
+        languageKnownInput.addEventListener('input', () => { resumeData.otherPersonal.languageKnown = languageKnownInput.value; updatePreview(); });
+
+        // --- Dynamic Field Functions ---
+
+        // Academic
+        function addAcademicInput(acad = {}) {
+            const index = resumeData.academic.length;
+            // Only push a new empty object if no initial data is provided or if it's explicitly adding a new empty row
+            if (Object.keys(acad).length === 0) {
+                resumeData.academic.push({ qualification: '', board: '', institute: '', year: '' });
+            }
+
+            const div = document.createElement('div');
+            div.className = 'academic-item p-4 mb-4 border border-gray-200 rounded-lg bg-gray-50';
+            // Adjusted styles for warm tones
+            div.style.backgroundColor = '#FBF7F4'; /* Slightly darker cream for academic items */
+            div.style.borderColor = '#D6C0B0'; /* Warm border color */
+            div.innerHTML = `
+                <div class="flex justify-end mb-2">
+                    <button class="remove-academic-btn text-[#D64545] hover:text-[#B33939] text-sm font-semibold" data-index="${index}">Remove</button>
+                </div>
+                <input type="text" placeholder="Qualification (e.g., B.Tech, 12th, 10th)" class="w-full p-2 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#B35932]" value="${acad.qualification || ''}">
+                <input type="text" placeholder="Board/University Name" class="w-full p-2 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#B35932]" value="${acad.board || ''}">
+                <input type="text" placeholder="Institute/School Name" class="w-full p-2 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#B35932]" value="${acad.institute || ''}">
+                <input type="text" placeholder="Year of Passing" class="w-full p-2 mb-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#B35932]" value="${acad.year || ''}">
+            `;
+            academicContainer.appendChild(div);
+
+            div.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const inputType = e.target.placeholder.split(' ')[0].toLowerCase();
+                    if (inputType.includes('qualif')) resumeData.academic[index].qualification = e.target.value;
+                    else if (inputType.includes('board')) resumeData.academic[index].board = e.target.value;
+                    else if (inputType.includes('instit')) resumeData.academic[index].institute = e.target.value;
+                    else if (inputType.includes('year')) resumeData.academic[index].year = e.target.value;
+                    updatePreview();
+                });
+            });
+
+            div.querySelector('.remove-academic-btn').addEventListener('click', removeAcademicInput);
+
+            // Update the data-index for all remove buttons after adding/removing
+            updateAcademicRemoveButtonIndices();
+        }
+
+        function removeAcademicInput(event) {
+            const indexToRemove = parseInt(event.target.dataset.index);
+            resumeData.academic.splice(indexToRemove, 1);
+            // Re-render all academic inputs to correctly update indices
+            academicContainer.innerHTML = '';
+            resumeData.academic.forEach((acad, i) => addAcademicInput(acad)); // Pass existing data
+            updatePreview();
+        }
+
+        function updateAcademicRemoveButtonIndices() {
+            const removeButtons = academicContainer.querySelectorAll('.remove-academic-btn');
+            removeButtons.forEach((button, i) => {
+                button.dataset.index = i;
+            });
+        }
+
+
+        addAcademicBtn.addEventListener('click', () => {
+            addAcademicInput({}); // Call with an empty object to add a new empty row
+            updatePreview();
+        });
+
+        // Experience
+        function addExperienceInput(exp = {}) {
+            const index = resumeData.experience.length;
+            // Only push a new empty object if no initial data is provided or if it's explicitly adding a new empty row
+            if (Object.keys(exp).length === 0) {
+                resumeData.experience.push({ description: '' });
+            }
+
+            const div = document.createElement('div');
+            div.className = 'experience-item p-4 mb-4 border border-gray-200 rounded-lg bg-gray-50';
+            // Adjusted styles for warm tones
+            div.style.backgroundColor = '#FBF7F4'; /* Slightly darker cream for experience items */
+            div.style.borderColor = '#D6C0B0'; /* Warm border color */
+            div.innerHTML = `
+                <div class="flex justify-end mb-2">
+                    <button class="remove-experience-btn text-[#D64545] hover:text-[#B33939] text-sm font-semibold" data-index="${index}">Remove</button>
+                </div>
+                <textarea placeholder="Describe your work experience here. (e.g., Company Name, Job Title, Dates, Key responsibilities and achievements in bullet points)" rows="5" class="w-full p-2 border border-gray-300 rounded-md text-sm resize-y focus:outline-none focus:ring-2 focus:ring-[#B35932]">${exp.description || ''}</textarea>
+            `;
+            experienceContainer.appendChild(div);
+
+            div.querySelector('textarea').addEventListener('input', (e) => {
+                resumeData.experience[index].description = e.target.value;
+                updatePreview();
+            });
+            div.querySelector('.remove-experience-btn').addEventListener('click', removeExperienceInput);
+
+            // Update the data-index for all remove buttons after adding/removing
+            updateExperienceRemoveButtonIndices();
+        }
+
+        function removeExperienceInput(event) {
+            const indexToRemove = parseInt(event.target.dataset.index);
+            resumeData.experience.splice(indexToRemove, 1);
+            // Re-render all experience inputs to correctly update indices
+            experienceContainer.innerHTML = '';
+            resumeData.experience.forEach((exp, i) => addExperienceInput(exp)); // Pass existing data
+            updatePreview();
+        }
+
+        function updateExperienceRemoveButtonIndices() {
+            const removeButtons = experienceContainer.querySelectorAll('.remove-experience-btn');
+            removeButtons.forEach((button, i) => {
+                button.dataset.index = i;
+            });
+        }
+
+        addExperienceBtn.addEventListener('click', () => {
+            addExperienceInput({}); // Call with an empty object to add a new empty row
+            updatePreview();
+        });
+
+        // --- Removed LLM Integration for Career Objective ---
+        // The generateObjectiveBtn event listener and related functions have been removed.
+
+        // --- Print Resume Functionality ---
+        printResumeBtn.addEventListener('click', () => {
+            window.print(); // This opens the browser's print dialog, which allows saving as PDF.
+        });
+
+        // --- Clear All Functionality ---
+        function clearAllData() {
+            // Reset resumeData to initial empty state
+            resumeData = {
+                personal: {
+                    name: '', dob: '', address: '', phone: '', email: ''
+                },
+                careerObjective: '',
+                academic: [],
+                otherPersonal: {
+                    fatherName: '', motherName: '', gender: '', maritalStatus: '',
+                    nationality: '', category: '', languageKnown: ''
+                },
+                experience: []
+            };
+
+            // Clear all input fields
+            nameInput.value = '';
+            dobInput.value = '';
+            addressInput.value = '';
+            phoneInput.value = '';
+            emailInput.value = '';
+            careerObjectiveInput.value = '';
+            fatherNameInput.value = '';
+            motherNameInput.value = '';
+            genderSelect.value = '';
+            maritalStatusSelect.value = '';
+            nationalityInput.value = '';
+            categorySelect.value = '';
+            languageKnownInput.value = '';
+
+            // Clear dynamic containers
+            academicContainer.innerHTML = '';
+            experienceContainer.innerHTML = '';
+
+            // Add one empty academic and experience row by default
+            addAcademicInput({}); // Pass empty object to signify new empty row
+            addExperienceInput({}); // Pass empty object to signify new empty row
+
+            updatePreview(); // Update preview with cleared data
+            saveResumeData(); // Save cleared data to local storage
+        }
+
+        clearAllBtn.addEventListener('click', clearAllData);
+
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', loadResumeData);
+    </script>
+</body>
+</html>
